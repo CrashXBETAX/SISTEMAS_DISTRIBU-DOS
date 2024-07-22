@@ -2,6 +2,7 @@ from socket import *
 import random
 import subprocess
 import sys
+import threading
 
 def enviando_mensagem(connectionSocket, sentence):
     sen = sentence.encode()
@@ -11,7 +12,7 @@ def recebendo_mensagem(connectionSocket, clientes):
     clientes = clientes
     dados = connectionSocket.recv(1024)
     mensagem = dados.decode()
-    print(f"Número alvo para este cliente: {clientes[connectionSocket]}")
+    print(f"Número alvo para este cliente: {clientes[connectionSocket]}")   
     if mensagem == "QUIT":
         enviando_mensagem(connectionSocket, "Conexão encerrada")
         connectionSocket.close()
@@ -27,7 +28,11 @@ def recebendo_mensagem(connectionSocket, clientes):
             enviando_mensagem(connectionSocket, "Acima")
             recebendo_mensagem(connectionSocket, clientes)
 
-def iniciando_server():
+def abrindo_um_thread(connectionSocket, clientes):
+    enviando_mensagem(connectionSocket, "Adivinhe o número entre 1 e 100")
+    recebendo_mensagem(connectionSocket, clientes)
+
+def iniciando_server(i):
     serverPort = 8080
     serverIp = "0.0.0.0"
     serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -41,21 +46,25 @@ def iniciando_server():
     while True:
         connectionSocket, addr = serverSocket.accept()
         print(F"Conexão de {addr}")
-        lista_num = criando_random(lista_num)
+        lista_num, i = criando_random(lista_num, i)
         for aleatorio in lista_num:
             clientes[connectionSocket] = aleatorio
+            #print(f"Clientes: {clientes}")
         #print(f"Clientes: {clientes}")
-        enviando_mensagem(connectionSocket, "Adivinhe o número entre 1 e 100")
-        recebendo_mensagem(connectionSocket, clientes)
+        thread_para_cliente = threading.Thread(target=abrindo_um_thread, args=(connectionSocket, clientes))
+        thread_para_cliente.start()
+        
 
-def criando_random(lista):
-    num = random.randint(0, 100)
-    lista.append(num)
-    #print(f"Números aleatórios gerados: {lista}")
-    return lista
+def criando_random(lista, i):
+    #num = random.randint(0, 100)
+    lista_pre = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    lista.append(lista_pre[i])
+    i += 1
+    return lista, i
 
 try:
-    iniciando_server()
+    i = 0
+    iniciando_server(i)
 except Exception as e:
     #print(f"Erro inesperado: {e}")
     cmd = "fuser -k 8080/tcp"

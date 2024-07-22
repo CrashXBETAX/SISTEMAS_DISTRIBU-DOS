@@ -170,7 +170,7 @@ kill $SERVER_PID
 echo "Servidor encerrado"
 
 # Apagar os arquivos de saída do cliente
-#rm client_output_guess.txt client_output_quit.txt client_output_two_guesses_quit.txt client_output_simultaneous_1.txt client_output_simultaneous_2.txt client_output_three_1.txt client_output_three_2.txt client_output_three_3.txt
+rm client_output_guess.txt client_output_quit.txt client_output_two_guesses_quit.txt client_output_simultaneous_1.txt client_output_simultaneous_2.txt client_output_three_1.txt client_output_three_2.txt client_output_three_3.txt
 
 # Calcular a nota final
 nota_final=$((nota * 10 / total_tests))
