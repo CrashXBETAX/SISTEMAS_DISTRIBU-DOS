@@ -37,7 +37,6 @@ def iniciando_server(i):
     serverIp = "0.0.0.0"
     serverSocket = socket(AF_INET, SOCK_STREAM)
     serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-
     serverSocket.bind((serverIp, serverPort))
     serverSocket.listen(1)
     lista_num = []
