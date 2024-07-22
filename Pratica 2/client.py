@@ -11,20 +11,21 @@ while True:
     dados = cliente.recv(1024)
     mensagem = dados.decode()
     print(mensagem)
-    if mensagem == "Adivinhe o número entre 1 e 100":
-        num = input("Digite seu palpite ou \"QUIT\" para sair: ")
-        if num.upper() == "QUIT":
+    try:
+        if mensagem == "Adivinhe o número entre 1 e 100":
+            num = input("Digite seu palpite ou \"QUIT\" para sair: ")
             cliente.send(num.encode())
-        cliente.send(num.encode())
-    if mensagem == "Igual":
-        break
-    if mensagem == "Abaixo":
-        num = input("Digite seu palpite ou \"QUIT\" para sair: ")
-        cliente.send(num.encode())
-    if mensagem == "Acima":
-        num = input("Digite seu palpite ou \"QUIT\" para sair: ")
-        cliente.send(num.encode())
-    if mensagem == "Conexão encerrada":
+        if mensagem == "Igual":
+            break
+        if mensagem == "Abaixo":
+            num = input("Digite seu palpite ou \"QUIT\" para sair: ")
+            cliente.send(num.encode())
+        if mensagem == "Acima":
+            num = input("Digite seu palpite ou \"QUIT\" para sair: ")
+            cliente.send(num.encode())
+        if mensagem == "Conexão encerrada":
+            break
+    except EOFError as e:
         break
 
 cliente.close()
