@@ -66,6 +66,4 @@ try:
     iniciando_server(i)
 except Exception as e:
     #print(f"Erro inesperado: {e}")
-    cmd = "fuser -k 8080/tcp"
-    subprocess.run(cmd, shell=True)
     sys.exit(1)
