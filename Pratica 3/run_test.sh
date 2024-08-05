@@ -220,7 +220,7 @@ echo "Testes concluídos."
 
 # Remove os arquivos de log criados
 echo "Removendo arquivos de log..."
-rm -f cliente1.log cliente2.log cliente3.log cliente4.log cliente5.log cliente6.log cliente7.log cliente8.log cliente8_recon.log
+#rm -f cliente1.log cliente2.log cliente3.log cliente4.log cliente5.log cliente6.log cliente7.log cliente8.log cliente8_recon.log
 echo "Arquivos de log removidos."
 
 # Calcula a nota final

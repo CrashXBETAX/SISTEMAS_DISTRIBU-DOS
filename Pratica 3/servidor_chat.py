@@ -1,29 +1,52 @@
 from socket import *
-import random
-import subprocess
 import sys
 import threading
 
-def salvando_user(connectionSocket, usuarios, usuario):
+def salvando_user(connectionSocket, usuarios, usuario, addr):
     user = usuarios.get(connectionSocket)
     if not user:
         usuarios[connectionSocket] = usuario
         print(usuarios[connectionSocket])
+    enviando_mensagem(connectionSocket, f"Conexão estabelecida com o {addr}")
+    print(f"Conexão estabelecida com o {addr}")
+    recebendo_mensagem(connectionSocket, usuarios, addr)
 
 def enviando_mensagem(connectionSocket, sentence):
     sen = sentence.encode()
     connectionSocket.send(sen)
 
-def recebendo_mensagem(connectionSocket, usuarios):
-    usuarios = usuarios
-    dados = connectionSocket.recv(1024)
-    mensagem = dados.decode()
-    print(f"Número alvo para este cliente: {usuarios[connectionSocket]}")
-    print(mensagem) 
-    connectionSocket.close()
+def enviando_mensagem_para_outros(connectionSocket, sentence, usuarios):
+    sen = sentence.encode()
+    for user in usuarios:
+        if user != connectionSocket:
+            user.send(sen)
 
-def abrindo_um_thread(connectionSocket, usuarios, user):
-    salvando_user(connectionSocket, usuarios, user)
+def removendo_user(connectionSocket, usuarios):
+    user = usuarios.get(connectionSocket)
+    if user:
+        del usuarios[connectionSocket]
+
+def recebendo_mensagem(connectionSocket, usuarios, addr):
+    while True:
+        dados = connectionSocket.recv(1024)
+        mensagem = dados.decode()
+        if not mensagem:
+            continue
+        else:
+            print(f"Mensagem recebida de {addr}: {usuarios[connectionSocket]}: {mensagem}") 
+            if mensagem == "EXIT":
+                removendo_user(connectionSocket, usuarios)
+                enviando_mensagem(connectionSocket, "Conexão encerrada pelo servidor")
+                print("Cliente desconectado: ", addr)
+                connectionSocket.close()
+                break
+            else:
+                #enviando_mensagem(connectionSocket, f"{usuarios[connectionSocket]}: {mensagem}")
+                enviando_mensagem_para_outros(connectionSocket, f"{usuarios[connectionSocket]}: {mensagem}", usuarios)
+
+def abrindo_um_thread(connectionSocket, usuarios, user, addr):
+    salvando_user(connectionSocket, usuarios, user, addr)
+    
 
 def iniciando_server():
     serverPort = 8080
@@ -38,7 +61,7 @@ def iniciando_server():
     while True:
         connectionSocket, addr = serverSocket.accept()
         user = connectionSocket.recv(1024).decode()
-        thread_para_cliente = threading.Thread(target=abrindo_um_thread, args=(connectionSocket, usuarios, user))
+        thread_para_cliente = threading.Thread(target=abrindo_um_thread, args=(connectionSocket, usuarios, user, addr))
         thread_para_cliente.start()
         
 

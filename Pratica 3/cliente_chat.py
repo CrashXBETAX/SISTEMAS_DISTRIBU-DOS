@@ -17,16 +17,29 @@ def mensagem_a_recebida(cliente):
     while True:
         dados = cliente.recv(1024)
         mensagem = dados.decode()
-        print(mensagem)
+        if not mensagem:
+            continue
+        if mensagem == "Conexão encerrada pelo servidor":
+            cliente.close()
+            print("Encerrando conexão")
+            break
+        else:
+            print(mensagem)
+        
 def mensagem_a_enviada(cliente):
     while True:
         mensagem = input()
-        cliente.send(mensagem.encode())
-print("Hello")
-receber = threading.Thread(target=mensagem_a_recebida, args=(cliente,))
-receber.start
-enviar = threading.Thread(target=mensagem_a_enviada, args=(cliente,))
-enviar.start
-print("Hello")
+        if not mensagem:
+            continue
+        if mensagem == "EXIT":
+            print("Mensagem 'EXIT' enviada, aguardando desconexão...")
+            cliente.send(mensagem.encode())
+            break
+        else:
+            cliente.send(mensagem.encode())
 
-cliente.close()
+thread_enviada = threading.Thread(target=mensagem_a_enviada, args=(cliente,))
+thread_recebida = threading.Thread(target=mensagem_a_recebida, args=(cliente,))
+
+thread_recebida.start()
+thread_enviada.start()
