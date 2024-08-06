@@ -41,7 +41,6 @@ def recebendo_mensagem(connectionSocket, usuarios, addr):
                 connectionSocket.close()
                 break
             else:
-                #enviando_mensagem(connectionSocket, f"{usuarios[connectionSocket]}: {mensagem}")
                 enviando_mensagem_para_outros(connectionSocket, f"{usuarios[connectionSocket]}: {mensagem}", usuarios)
 
 def abrindo_um_thread(connectionSocket, usuarios, user, addr):
